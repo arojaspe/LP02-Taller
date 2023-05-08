@@ -48,32 +48,33 @@ def t_error(t):
 # Construcción del lexer
 lexer = lex.lex()
 
-
 # Definición de la gramática
-def p_expression(p):
-    '''expression : MIN expr
-                  | MAX expr'''
-    p[0] = (p[1], p[2])
+def p_funcionobjetivo(p):
+    '''funcionobjetivo : MIN expresion
+                  | MAX expresion'''
+    p[0] = (('Palabra reservada',p[1]), ('Expresión {', p[2]))
+    # for element in p[0]:
+    #     print(element)
 
-def p_expr(p):
-    '''expr : term
-            | term PLUS expr
-            | term MINUS expr
-            | term EQUAL expr
-            | term DIVIDE expr'''
+def p_expresion(p):
+    '''expresion : termino
+            | termino PLUS expresion
+            | termino MINUS expresion
+            | termino EQUAL expresion
+            | termino DIVIDE expresion'''
     
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = (p[1], p[2], p[3])
+        p[0] = (('término [',p[1]), ('operador',p[2]), p[3])
 
-def p_term(p):
-    '''term : factor
-            | factor TIMES term'''
+def p_termino(p):
+    '''termino : factor
+                | factor TIMES termino'''
     if len(p) == 2:
-        p[0] = p[1]
+        p[0] = ('variable',p[1])
     else:
-        p[0] = (p[1], p[2], p[3])
+        p[0] = (('número',p[1]), ('operador',p[2]), p[3])
 
 def p_factor(p):
     '''factor : NUMBER
@@ -97,7 +98,29 @@ def main():
             continue
         result = parser.parse(s)
         print(result, "\n")
-        print(type(result))
+        contador = 1
+        for elem in (str(result).split('(')):
+            elem = elem.strip().replace(')', '')
+            elem = elem.strip().replace("'", "")
+            elem = elem.strip().replace(",", "")               
+            if elem != "":
+                print(elem)
+        
+        print("]")
+        print("]")
+        print("}")
+            # else:
+            #     print("(")
+            
+
+        # for element in range(len(result[0])): 
+        #     print(result[0][element])
+
+        # for i in range(len(result[1])):
+        #     for j in range(len(result[1])):
+        #         print(result[1][i][j])
+        
+        #print(result[1][0])
 
 if __name__ == '__main__':
     main()
