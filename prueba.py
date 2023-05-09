@@ -52,9 +52,7 @@ lexer = lex.lex()
 def p_funcionobjetivo(p):
     '''funcionobjetivo : MIN expresion
                   | MAX expresion'''
-    p[0] = (('Palabra reservada',p[1]), ('Expresión {', p[2]))
-    # for element in p[0]:
-    #     print(element)
+    p[0] = (('Palabra reservada',p[1]), ('Expresión ', p[2]))
 
 def p_expresion(p):
     '''expresion : termino
@@ -66,7 +64,7 @@ def p_expresion(p):
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = (('término [',p[1]), ('operador',p[2]), p[3])
+        p[0] = (('término ',p[1]), ('operador',p[2]), (p[3]))
 
 def p_termino(p):
     '''termino : factor
@@ -98,29 +96,16 @@ def main():
             continue
         result = parser.parse(s)
         print(result, "\n")
-        contador = 1
+        contador = 0
         for elem in (str(result).split('(')):
-            elem = elem.strip().replace(')', '')
+            elem = elem.strip().replace(')', "")
             elem = elem.strip().replace("'", "")
-            elem = elem.strip().replace(",", "")               
+            elem = elem.strip().replace(",", "")
             if elem != "":
-                print(elem)
-        
-        print("]")
-        print("]")
-        print("}")
-            # else:
-            #     print("(")
-            
-
-        # for element in range(len(result[0])): 
-        #     print(result[0][element])
-
-        # for i in range(len(result[1])):
-        #     for j in range(len(result[1])):
-        #         print(result[1][i][j])
-        
-        #print(result[1][0])
-
+                print("\t"*contador+elem)
+                if "+" in elem:
+                    contador-=1 
+            else:
+                contador+=1
 if __name__ == '__main__':
     main()
