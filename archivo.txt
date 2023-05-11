@@ -1,3 +1,5 @@
 fo min z=4*x+5*y
+x
 r x>4
 r y<=5
+r z=2
