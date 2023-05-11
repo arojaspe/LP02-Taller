@@ -120,27 +120,28 @@ def p_error(p):
 parser = yacc.yacc()
 
 # Función principal
-def main():
-    while True:
-        try:
-            s = input('Ingrese una expresión: ')
-        except EOFError:
-            break
-        if not s:
-            continue
-        result = parser.parse(s)
-        #print(result, "\n")
-        contador = 0
-        for elem in (str(result).split('(')):
-            elem = elem.strip().replace(')', "")
-            elem = elem.strip().replace("'", "")
-            elem = elem.strip().replace(",", "")
-            if elem != "":
-                print("\t"*contador+elem)
-                if "+" in elem:
-                    contador-=1 
-            else:
-                contador+=1
+def imprimir(text):
+    try:
+        s = text
+    except EOFError:
+        exit()
+    result = parser.parse(s)
+    print(result, "\n")
+    contador = 0
+    for elem in (str(result).split('(')):
+        elem = elem.strip().replace(')', "")
+        elem = elem.strip().replace("'", "")
+        elem = elem.strip().replace(",", "")
+        if elem != "":
+            print("\t"*contador+elem)
+        else:
+            contador+=1
                 
+def main():
+    nombre_archivo = "archivo.txt"
+    with open(nombre_archivo, 'r') as archivo:
+        for linea in archivo:
+            imprimir(linea)
+
 if __name__ == '__main__':
     main()
