@@ -8,6 +8,10 @@ tokens = [
     'FO',       # Token para función
     'R',        # Token para restricción
     'VAR',      # Token para nombres de variables
+    'LBRACKET', # Token para caracter de arreglo o matriz "[" 
+    'RBRACKET', # Token para caracter de arreglo o matriz "]"
+    'COMMA',    # Token para caracter de arreglo o matriz ","
+    'ARRAY',
     'NUMBER',   # Token para números
     'PLUS',     # Token para el operador "+"
     'MINUS',    # Token para el operador "-"
@@ -17,7 +21,41 @@ tokens = [
     'LT',        # Token para el operador "<"
     'LE',        # Token para el operador "<="
     'GT',        # Token para el operador ">"
-    'GE'        # Token para el operador ">="
+    'GE',        # Token para el operador ">="
+    'IF',        #Token para la palabra reservada de Python "if"
+    'ELSE',      #Token para la palabra reservada de Python "else"
+    'FOR',       #Token para la palabra reservada de Python "for"
+    'WHILE',     #Token para la palabra reservada de Python "while"
+    'DO',        #Token para la palabra reservada de Python "do"
+    'SWITCH',        #Token para la palabra reservada de Python "switch"
+    'CASE',      #Token para la palabra reservada de Python "case"
+    'BREAK',     #Token para la palabra reservada de Python "break"
+    'CONTINUE',      #Token para la palabra reservada de Python "continue"
+    'RETURN',        #Token para la palabra reservada de Python "return"
+    'FUNCTION',      #Token para la palabra reservada de Python "function"
+    'CLASS',     #Token para la palabra reservada de Python "class"
+    'TRY',       #Token para la palabra reservada de Python "try"
+    'CATCH',     #Token para la palabra reservada de Python "catch"
+    'THROW',     #Token para la palabra reservada de Python "throw"
+    'FINALLY',       #Token para la palabra reservada de Python "finally"
+    'IMPORT',        #Token para la palabra reservada de Python "import"
+    'EXPORT',        #Token para la palabra reservada de Python "export"
+    'CONST',     #Token para la palabra reservada de Python "const"
+    'LET',       #Token para la palabra reservada de Python "let"
+    'STATIC',        #Token para la palabra reservada de Python "static"
+    'PUBLIC',        #Token para la palabra reservada de Python "public"
+    'PRIVATE',       #Token para la palabra reservada de Python "private"
+    'PROTECTED',     #Token para la palabra reservada de Python "protected"
+    'INTERFACE',     #Token para la palabra reservada de Python "interface"
+    'EXTENDS',       #Token para la palabra reservada de Python "extends"
+    'IMPLEMENTS',        #Token para la palabra reservada de Python "implements"
+    'NEW',       #Token para la palabra reservada de Python "new"
+    'THIS',      #Token para la palabra reservada de Python "this"
+    'SUPER',     #Token para la palabra reservada de Python "super"
+    'INSTANCEOF',        #Token para la palabra reservada de Python "instanceof"
+    'TRUE',      #Token para la palabra reservada de Python "true"
+    'FALSE',     #Token para la palabra reservada de Python "false"
+    'NULL'      #Token para la palabra reservada de Python "null"
 ]
 
 # Expresiones regulares para tokens simples
@@ -26,6 +64,9 @@ t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'\/'
 t_EQUAL = r'\='
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
+t_COMMA = r','
 t_LT = r'<'
 t_LE = r'<='
 t_GT = r'>'
@@ -58,9 +99,14 @@ def t_NUMBER(t):
     t.value = float(t.value)
     return t
 
+def t_COMMENT(t):
+    r'\#.*'
+    print("Comentario", t.value)
+
 # Manejo de errores
 def t_error(t):
-    print("Error: Carácter ilegal '%s'" % t.value[0])
+    if t.value[0] != None: 
+        print("Error: Carácter ilegal '%s'" % t.value[0])
     t.lexer.skip(1)
 
 # Construcción del lexer
@@ -111,14 +157,34 @@ def p_termino(p):
 
 def p_factor(p):
     '''factor : NUMBER
-              | VAR'''
+              | VAR
+              | array'''
     if isinstance(p[1], float):
         p[0] = ('número', p[1])
-    else:
+    elif isinstance(p[1], str):
         p[0] = ('variable', p[1])
+    else:
+        p[0] = ('array', p[1])
+
+def p_array(p):
+    '''array : LBRACKET arrayElements RBRACKET'''
+    p[0] = (p[2])
+
+def p_arrayElements(p):
+    '''arrayElements : factor
+                     | arrayElements COMMA factor'''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = p[1] + (p[3],)
+
+def p_matrix(p):
+    '''matrix : LBRACKET array RBRACKET'''
+    p[0] = ("Matriz", p[2])
 
 def p_error(p):
-    print("Error de sintaxis en '%s'" % p)
+    if p!=None:
+        print("Error de sintaxis en '%s'" % p)
     
 # Construcción del parser
 parser = yacc.yacc()
@@ -130,13 +196,14 @@ def imprimir(text):
     except EOFError:
         exit()
     result = parser.parse(s)
-    print(result, "\n")
+    if result != None: 
+        print(result, "\n")
     contador = 0
     for elem in (str(result).split('(')):
         elem = elem.strip().replace(')', "")
         elem = elem.strip().replace("'", "")
         elem = elem.strip().replace(",", "")
-        if elem != "":
+        if elem != "" and elem != "None":
             print("\t"*contador+elem)
         else:
             contador+=1
