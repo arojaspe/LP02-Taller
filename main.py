@@ -118,7 +118,7 @@ def p_factor(p):
         p[0] = ('variable', p[1])
 
 def p_error(p):
-    print("Error de sintaxis en '%s'" % p.value)
+    print("Error de sintaxis en '%s'" % p)
     
 # Construcción del parser
 parser = yacc.yacc()
