@@ -164,23 +164,42 @@ def p_factor(p):
     elif isinstance(p[1], str):
         p[0] = ('variable', p[1])
     else:
-        p[0] = ('array', p[1])
-
+        p[0] = (p[1])
 def p_array(p):
-    '''array : LBRACKET arrayElements RBRACKET'''
-    p[0] = (p[2])
-
+    '''array : LBRACKET arrayElements RBRACKET
+             | matrix'''
+    if len(p) == 4:
+        p[0] = ('array', p[2])
+    else:
+        p[0] = p[1]
+   
 def p_arrayElements(p):
     '''arrayElements : factor
                      | arrayElements COMMA factor'''
     if len(p) == 2:
         p[0] = p[1]
+    elif isinstance(p[3], tuple):
+        p[0] = p[1] + (p[3],)
     else:
         p[0] = p[1] + (p[3],)
 
 def p_matrix(p):
-    '''matrix : LBRACKET array RBRACKET'''
-    p[0] = ("Matriz", p[2])
+    '''matrix : LBRACKET array RBRACKET
+              | LBRACKET array COMMA matrix_elements RBRACKET'''
+
+    if len(p) == 4:
+        p[0] = ('matrix', p[2])
+    else:
+        p[0] = ('matrix', p[2]) + p[4]
+
+def p_matrix_elements(p):
+    '''matrix_elements : array
+                       | array COMMA matrix_elements'''
+    if len(p) == 2:
+        p[0] = (p[1])
+    else:
+        p[0] = (p[1])+ p[3]
+
 
 def p_error(p):
     if p!=None:
@@ -207,7 +226,7 @@ def imprimir(text):
             print("\t"*contador+elem)
         else:
             contador+=1
-                
+
 def main():
     nombre_archivo = "archivo.txt"
     with open(nombre_archivo, 'r') as archivo:
