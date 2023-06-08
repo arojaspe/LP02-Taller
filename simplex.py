@@ -1,40 +1,64 @@
-import numpy as np
-from scipy.optimize import linprog
+from pulp import *
 
 
-def solve_simplex(filename):
-    # Leer la función objetivo y las restricciones del archivo
-    with open(filename, 'r') as file:
+def solve():
+    variables = []
+    fo = None
+    variable = 0
+    restriction = None
+    foOk = False
+    with open('datos.txt', 'r') as file:
         lines = file.readlines()
+        for line in lines:
+            line = line.strip()
+            if line.startswith("max"):
+                prob = LpProblem("Problema", LpMaximize)
+            elif line.startswith("min"):
+                prob = LpProblem("Problema", LpMinimize)
+            elif line == "":
+                continue
+            elif variable == 0:
+                try:
+                    variable = int(line)
+                    for i in range(0, variable):
+                        variables.append(LpVariable("x"+str(i+1), lowBound=0))
+                except:
+                    pass
+            elif not foOk:
+                numbers = line.split(" ")
+                for i in range(len(numbers)):
+                    fo += int(numbers[i])*variables[i]
+                prob += fo
+                foOk = True
+            elif restriction == None:
+                numbers = line.split(" ")
+                # Resolver el problema
+                if numbers[len(numbers)-2] == ">":
+                    prob += lpSum((int(numbers[i]) * variables[i])
+                                  for i in range(len(variables))) > int(numbers[len(numbers)-1])
 
-    # Obtener el número de variables y restricciones
-    num_vars = int(lines[0])
-    num_constraints = int(lines[1])
+                elif numbers[len(numbers)-2] == "<":
+                    prob += lpSum((int(numbers[i]) * variables[i])
+                                  for i in range(len(variables))) < int(numbers[len(numbers)-1])
 
-    # Obtener los coeficientes de la función objetivo
-    c = np.array([float(x) for x in lines[2].split()])
+                elif numbers[len(numbers)-2] == ">=":
+                    prob += lpSum((int(numbers[i]) * variables[i])
+                                  for i in range(len(variables))) >= int(numbers[len(numbers)-1])
 
-    # Crear la matriz de restricciones (coeficientes)
-    A = np.zeros((num_constraints, num_vars))
-    b = np.zeros(num_constraints)
+                elif numbers[len(numbers)-2] == "<=":
+                    prob += lpSum((int(numbers[i]) * variables[i])
+                                  for i in range(len(variables))) <= int(numbers[len(numbers)-1])
 
-    for i in range(num_constraints):
-        line = lines[i + 3].split()
-        constraint = line[:-2]
-        operator = line[-2]
-        rhs = float(line[-1])
+    # Resolver el problema
+    prob.solve()
 
-        A[i] = [float(x) for x in constraint]
-        b[i] = rhs if operator == '<=' else -rhs
+    # Imprimir el estado de la solución
+    # print("Estado de la solución:", LpStatus[prob.status])
 
-    # Resolver el problema utilizando el método Simplex
-    res = linprog(c, A_ub=A, b_ub=b, method='simplex')
+    # Imprimir la solución óptima y el valor óptimo
+    # print("Valor óptimo:", value(prob.objective))
+    # print("Solución:")
+    # for variable in prob.variables():
+    #    print(variable.name, "=", value(variable))
 
-    # Mostrar la solución obtenida
-    print('Solución:')
-    print('Valor óptimo:', res.fun)
-    print('Variables de decisión:', res.x)
-
-
-# Llamar a la función con el nombre del archivo de entrada
-solve_simplex('datos.txt')
+    return prob
