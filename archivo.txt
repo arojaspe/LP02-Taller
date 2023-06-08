@@ -1,4 +1,20 @@
-fo min 2*x + 3*y + 4*z
-r 3*x + 4*y >= 5*z
-r x + 2*y >= 3*z - 4
-r x + y = z
+fo max j*z*y{       
+        i*x + i*y + z <= 10;
+        x + y + z <= 15;
+        x + j*y >= 5;
+        x + y >= 8;
+}
+#nuestros bucles
+para i=0; i<n; i=i+1 {
+        x = y;
+        y = 10*z;
+        z = x + y;
+imprimir(20*x)
+}
+#nuestros condicionales
+si y < 1 {
+        b = 0;
+}
+si_no {
+        res = g(y-1);
+}
