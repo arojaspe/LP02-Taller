@@ -21,6 +21,7 @@ tokens = [
     'ENTONCES', # Token para palabra reservada "ENTONCES"
     'RETORNAR', # Token para palabra reservada "RETORNAR"
     'IMPRIMIR',
+    'PARA',
     'LPAR',   # Token para caracter "("
     'RPAR',   # Token para caracter ")"
     'NUMBER',   # Token para números
@@ -55,7 +56,7 @@ t_GT = r'>'
 t_GE = r'>='
 t_PCOMA = r';'
 # t_SL = r'\n'
-t_ignore = '\t \n'
+t_ignore = ' \t \n'
 
 # Expresiones regulares para tokens complejos
 def t_MIN(t):
@@ -75,7 +76,7 @@ def t_R(t):
     return t
 
 def t_SI(t):
-    r'SI'
+    r'Si'
     return t
 
 def t_SI_NO(t):
@@ -92,6 +93,9 @@ def t_RETORNAR(t):
 
 def t_IMPRIMIR(t):
     r'imprimir'
+    return t
+def t_PARA(t):
+    r'para'
     return t
 
 def t_SA(t):
@@ -137,7 +141,9 @@ def p_contenido(p):
                   | IMPRIMIR LPAR expresion RPAR PCOMA'''
     p[0] = p[1]
 
-    
+# def p_bloque(p):
+#     '''bloque : LBRACE proposicion RBRACE'''
+#     p[0]=p[2]
 def p_problema(p):
     '''problema : funcionobjetivo LBRACE restricciones RBRACE'''
     if len(p) == 2:
@@ -192,10 +198,8 @@ def p_expresiones(p):
                    | expresion PCOMA expresiones'''
     if len(p) == 2:
         p[0] = p[1]
-        print(p[0])
     else:
         p[0] = [p[1]] + [p[2]]
-        print(p[0])
 def p_termino(p):
     '''termino : factor
                | termino TIMES factor'''
@@ -204,6 +208,9 @@ def p_termino(p):
     else:
         p[0] = (p[1], ('operador', p[2]), p[3])
 
+def p_conjunto(p):
+    '''conjunto : LBRACE expresiones RBRACE '''
+    p[0]=p[2]
 def p_factor(p):
     '''factor : NUMBER
               | VAR
@@ -253,13 +260,17 @@ def p_proposicion(p):
     ''' proposicion : si_senten'''
 def p_si_senten(p):
     
-    '''si_senten : SI exp_condicional ENTONCES expresion 
-                 | SI exp_condicional ENTONCES bloque SI_NO expresiones'''
-    if len(p) == 4:
-        p[0] = ('Palabra reservada', p[1]), ('Condicion', p[2]), ('Palabra reservada', p[3]), p[4]
+    '''si_senten : SI bloque_condicional  
+                 | SI bloque_condicional  SI_NO expresiones'''
+    if len(p) == 3:
+        p[0] = ('Palabra reservada', p[1]), ('bloque condicional', p[2])
+        print('Analisis IF',p[0])
     else:
-        p[0] = ('Palabra reservada', p[1]), ('Condicion', p[2]), ('Palabra reservada', p[3]), p[4],p[5], p[6]
+        p[0] = ('Palabra reservada', p[1]), ('Condicion', p[2]), ('Palabra reservada', p[3])
 
+def p_bloque_condicional(p):
+    '''bloque_condicional : exp_condicional ENTONCES bloque'''
+    p[0]=(p[1],p[2],p[3])
 
 def p_exp_condicional(p):
      '''exp_condicional : expresion LT expresion
@@ -270,23 +281,23 @@ def p_exp_condicional(p):
      p[0] = ('expresion',p[1]),('Operador de comparación', p[2]),('expresion',p[3])
 
 def p_bloque(p):
-     '''bloque : expresion '''
-     p[0] = ('bloque', p[1])
-     print(p[0])
-
+     '''bloque : LBRACE sentencias RBRACE'''
+     p[0] = (p[2])
+     print('Soy el Bloque',p[0])
+    
 def p_sentencias(p):
-     '''sentencias : sentencia
+     '''sentencias : sentencia 
                    | sentencia sentencias'''
-     if len(p) == 1:
+     if len(p) == 2:
         p[0] = p[1]
      else:
         p[0] = [p[1]] + [p[2]]
 
 def p_sentencia(p):
-     '''sentencia : expresiones PCOMA
-                  | RETORNAR expresiones PCOMA
-                  | IMPRIMIR expresiones PCOMA'''
-     if len(p)==2:
+     '''sentencia : expresion PCOMA
+                  | RETORNAR expresion PCOMA
+                  | IMPRIMIR LPAR sentencias RPAR PCOMA'''
+     if len(p)==3:
          p[0] = (('Sentencia', p[1]), (p[2]))
         
      else:
