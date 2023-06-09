@@ -38,6 +38,7 @@ tokens = [
 ]
 
 # Expresiones regulares para tokens simples
+
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
@@ -59,6 +60,10 @@ t_PCOMA = r';'
 t_ignore = ' \t \n'
 
 # Expresiones regulares para tokens complejos
+def t_COMMENT(t):
+    r'(\#[^\r\n]*)|(\/\*.*?\*\/)'
+    t.lexer.lineno += t.value.count('\n')
+    print("Comentario:", t.value)
 def t_MIN(t):
     r'min'
     return t
@@ -115,9 +120,7 @@ def t_NUMBER(t):
     t.value = float(t.value)
     return t
 
-def t_COMMENT(t):
-    r'\#.*'
-    print("Comentario", t.value)
+
 
 # Manejo de errores
 def t_error(t):
@@ -137,8 +140,7 @@ lexer = lex.lex()
 
 def p_contenido(p):
     ''' contenido : problema
-                  | proposicion
-                  | expresion'''
+                  | proposicion'''
     if len(p)==2:
         p[0] = p[1]
 
@@ -265,7 +267,8 @@ def p_matrix_elements(p):
         p[0] = (p[1])+ p[3]
 
 def p_proposicion(p):
-    ''' proposicion : si_senten'''
+    ''' proposicion : si_senten
+                    | para'''
 def p_si_senten(p):
     
     '''si_senten : SI bloque_condicional  
@@ -314,10 +317,11 @@ def p_asignacion(p):
     '''asignacion : VAR EQUAL expresion
                   | VAR EQUAL array
                   | VAR EQUAL matrix'''
-    p[0]=(p[1],p[2],p[3])
+    p[0]=(p[1],p[3])
 def p_para(p):
-    ''' para : PARA asignacion PCOMA expresion PCOMA asignacion  bloque'''
-    p[0]=(p[2],p[4],p[6])
+    '''para : PARA asignacion PCOMA exp_condicional PCOMA  expresion PCOMA  bloque'''
+    p[0]=(p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8])
+    print('Soy el para',p[0])
 def p_error(p):
     if p!=None:
         print("Error de sintaxis en '%s'" % p)
