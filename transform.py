@@ -12,10 +12,12 @@ def transform(filename):
 
     for line in lines:
         line = line.strip()  # Eliminar espacios en blanco al inicio y final de la línea
-        if line.startswith("fo"):
+        if line.__contains__("fo"):
             # Línea de la función objetivo
             # Extraer los coeficientes de la función objetivo
-            variablesfo = line.split()[1:-1]
+            line = line.split()[0:-1]
+            variable = line[0]
+            variablesfo = line[3:]
             objetivo = variablesfo[0]
             variablesfo = variablesfo[1:]
             aux = []
@@ -29,13 +31,15 @@ def transform(filename):
             variables = len(variablesfo)
             for i in range(0, len(variablesfo)):
                 try:
-                    c = int(variablesfo[i].split("*")[0])
+                    c = float(variablesfo[i].split("*")[0])
                 except:
                     c = 1
                 coeficientes.append(c)
-        elif line.startswith("}") or line == "" or line.startswith("sa"):
+        elif line == "" or line.startswith("sa"):
             # Línea de cierre o línea vacía, ignorar
             continue
+        elif line.startswith("}"):
+            break
         else:
             # Línea de restricción
             res = line
@@ -45,7 +49,7 @@ def transform(filename):
             for i in range(0, len(restriccion)):
                 if i % 2 == 0:
                     try:
-                        r = int(restriccion[i].split("*")[0])
+                        r = float(restriccion[i].split("*")[0])
                     except:
                         r = 1
                     restriccions.append(r)
@@ -65,5 +69,9 @@ def transform(filename):
         content += restricciones+"\n"
     with open("datos.txt", 'w') as file:
         file.write(content)
-    res = solve()
+    res = [variable]
+    res.append(solve())
     return res
+
+
+transform("fo.txt")

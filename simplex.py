@@ -27,27 +27,19 @@ def solve():
             elif not foOk:
                 numbers = line.split(" ")
                 for i in range(len(numbers)):
-                    fo += int(numbers[i])*variables[i]
+                    fo += float(numbers[i])*variables[i]
                 prob += fo
                 foOk = True
             elif restriction == None:
                 numbers = line.split(" ")
                 # Resolver el problema
-                if numbers[len(numbers)-2] == ">":
-                    prob += lpSum((int(numbers[i]) * variables[i])
-                                  for i in range(len(variables))) > int(numbers[len(numbers)-1])
-
-                elif numbers[len(numbers)-2] == "<":
-                    prob += lpSum((int(numbers[i]) * variables[i])
-                                  for i in range(len(variables))) < int(numbers[len(numbers)-1])
-
-                elif numbers[len(numbers)-2] == ">=":
-                    prob += lpSum((int(numbers[i]) * variables[i])
-                                  for i in range(len(variables))) >= int(numbers[len(numbers)-1])
+                if numbers[len(numbers)-2] == ">=":
+                    prob += lpSum((float(numbers[i]) * variables[i])
+                                  for i in range(len(variables))) >= float(numbers[len(numbers)-1])
 
                 elif numbers[len(numbers)-2] == "<=":
-                    prob += lpSum((int(numbers[i]) * variables[i])
-                                  for i in range(len(variables))) <= int(numbers[len(numbers)-1])
+                    prob += lpSum((float(numbers[i]) * variables[i])
+                                  for i in range(len(variables))) <= float(numbers[len(numbers)-1])
 
     # Resolver el problema
     prob.solve()
@@ -61,4 +53,4 @@ def solve():
     # for variable in prob.variables():
     #    print(variable.name, "=", value(variable))
 
-    return prob
+    return [value(prob.objective), prob.variables()]

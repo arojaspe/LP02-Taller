@@ -261,13 +261,15 @@ def main():
     with open(nombre_archivo, 'r') as archivo:
         for linea in archivo:
             imprimir(linea)
-    res = transform(nombre_archivo)
-    print("Estado de la solución:", LpStatus[res.status])
-
+    translate("fo.txt")
+    res = transform("fo.txt")
+    # print("Estado de la solución:", LpStatus[res.status])
+    print("Variable: ", res[0])
     # Imprimir la solución óptima y el valor óptimo
-    print("Valor óptimo:", value(res.objective))
+    print("Valor óptimo:", res[1][0])
+    print(res[0], " = ", res[1][0])
     print("Solución:")
-    for variable in res.variables():
+    for variable in (res[1][1]):
         print(variable.name, "=", value(variable))
 
 
