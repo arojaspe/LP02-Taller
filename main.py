@@ -138,8 +138,10 @@ lexer = lex.lex()
 def p_contenido(p):
     ''' contenido : problema
                   | proposicion
-                  | IMPRIMIR LPAR expresion RPAR PCOMA'''
-    p[0] = p[1]
+                  | expresion'''
+    if len(p)==2:
+        p[0] = p[1]
+
 
 # def p_bloque(p):
 #     '''bloque : LBRACE proposicion RBRACE'''
@@ -204,9 +206,15 @@ def p_termino(p):
     '''termino : factor
                | termino TIMES factor'''
     if len(p) == 2:
-        p[0] = (p[1])
+        p[0] = p[1]
     else:
-        p[0] = (p[1], ('operador', p[2]), p[3])
+        if p[2] == '*':
+            if (p[1][0]=='variable' and p[1][1]!='i') and (p[3][0]=='variable' and p[3][1]!='i'):
+                print("Esto no es un modelo lineal [multiplicar variable * variable]")
+            else:
+                p[0] = (p[1], ('operador', p[2]), p[3])
+        else:
+            p[0] = (p[1], ('operador', p[2]), p[3])
 
 def p_conjunto(p):
     '''conjunto : LBRACE expresiones RBRACE '''
@@ -302,7 +310,14 @@ def p_sentencia(p):
         
      else:
          p[0] = (('Sentencia', p[1]), (p[2]), p[3])
-
+def p_asignacion(p):
+    '''asignacion : VAR EQUAL expresion
+                  | VAR EQUAL array
+                  | VAR EQUAL matrix'''
+    p[0]=(p[1],p[2],p[3])
+def p_para(p):
+    ''' para : PARA asignacion PCOMA expresion PCOMA asignacion  bloque'''
+    p[0]=(p[2],p[4],p[6])
 def p_error(p):
     if p!=None:
         print("Error de sintaxis en '%s'" % p)
