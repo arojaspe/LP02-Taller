@@ -1,6 +1,6 @@
 from ply import lex
 from ply import yacc
-from transform import transform
+from translate import execute_code
 from pulp import *
 
 # Lista de tokens
@@ -261,16 +261,8 @@ def main():
     with open(nombre_archivo, 'r') as archivo:
         for linea in archivo:
             imprimir(linea)
-    translate("fo.txt")
-    res = transform("fo.txt")
-    # print("Estado de la solución:", LpStatus[res.status])
-    print("Variable: ", res[0])
-    # Imprimir la solución óptima y el valor óptimo
-    print("Valor óptimo:", res[1][0])
-    print(res[0], " = ", res[1][0])
-    print("Solución:")
-    for variable in (res[1][1]):
-        print(variable.name, "=", value(variable))
+    # translate("fo.txt")
+    res = execute_code("fo.txt")
 
 
 if __name__ == '__main__':
