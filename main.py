@@ -33,7 +33,7 @@ tokens = [
     'LE',        # Token para el operador "<="
     'GT',        # Token para el operador ">"
     'GE',
-    'SL'        # Token para el operador ">="
+    'SL'        # Token para "\n"
 ]
 
 # Expresiones regulares para tokens simples
@@ -54,8 +54,8 @@ t_LE = r'<='
 t_GT = r'>'
 t_GE = r'>='
 t_PCOMA = r';'
-t_SL = r'\n'
-t_ignore = ' \t \n'
+# t_SL = r'\n'
+t_ignore = '\t \n'
 
 # Expresiones regulares para tokens complejos
 def t_MIN(t):
@@ -102,6 +102,10 @@ def t_VAR(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
     return t
 
+def t_SL(t):
+    r'\n'
+    return t
+
 def t_NUMBER(t):
     r'\d+(\.\d+)?'
     t.value = float(t.value)
@@ -135,9 +139,14 @@ def p_contenido(p):
 
     
 def p_problema(p):
-    '''problema : funcionobjetivo
-                | restricciones'''
-    p[0] = (p[1])
+    '''problema : funcionobjetivo LBRACE restricciones RBRACE'''
+    if len(p) == 2:
+        p[0] = p[1]
+    elif len(p) == 4:
+        p[0] = p[2]
+    else:
+        p[0] = (p[1], p[3])
+        print(p[0])
 
 def p_funcionobjetivo(p):
     '''funcionobjetivo : FO MIN  expresion 
@@ -159,12 +168,13 @@ def p_restriccion(p):
 def p_restricciones(p):
     '''restricciones : restriccion PCOMA
                      | restriccion PCOMA restricciones'''
+
+    print('Hola, soy restricciones',p[1])
     
-    if len(p) == 2:
-        p[0] = (p[1])
-    
+    if len(p) == 4:
+        p[0] = [p[1]] + p[3]
     else:
-        p[0] = [p[1]] + [p[2]]
+        p[0] = [p[1]]
 
 
 def p_expresion(p):
