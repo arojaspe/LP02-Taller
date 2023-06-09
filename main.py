@@ -32,7 +32,8 @@ tokens = [
     'LT',        # Token para el operador "<"
     'LE',        # Token para el operador "<="
     'GT',        # Token para el operador ">"
-    'GE',        # Token para el operador ">="
+    'GE',
+    'SL'        # Token para el operador ">="
 ]
 
 # Expresiones regulares para tokens simples
@@ -53,7 +54,7 @@ t_LE = r'<='
 t_GT = r'>'
 t_GE = r'>='
 t_PCOMA = r';'
-
+t_SL = r'\n'
 t_ignore = ' \t \n'
 
 # Expresiones regulares para tokens complejos
@@ -132,17 +133,15 @@ def p_contenido(p):
                   | IMPRIMIR LPAR expresion RPAR PCOMA'''
     p[0] = p[1]
 
-def p_proposicion(p):
-    ''' proposicion : si_senten'''
     
 def p_problema(p):
-    '''problema : funcionobjetivo restricciones'''
-    print(p[0])
-    p[0] = (p[1]), (p[2])
+    '''problema : funcionobjetivo
+                | restricciones'''
+    p[0] = (p[1])
 
 def p_funcionobjetivo(p):
-    '''funcionobjetivo : FO MIN expresion
-                       | FO MAX expresion'''
+    '''funcionobjetivo : FO MIN  expresion 
+                       | FO MAX  expresion '''
     p[0] = ('funcionobjetivo', ('Palabra reservada', p[2]), p[3])
 
 def p_restriccion(p):
@@ -162,10 +161,11 @@ def p_restricciones(p):
                      | restriccion PCOMA restricciones'''
     
     if len(p) == 2:
-        p[0] = p[1]
+        p[0] = (p[1])
     
     else:
         p[0] = [p[1]] + [p[2]]
+
 
 def p_expresion(p):
     '''expresion : termino
@@ -177,7 +177,15 @@ def p_expresion(p):
         p[0] = (p[1])
     else:
         p[0] = p[1], ('operador', p[2]), p[3]
-
+def p_expresiones(p): 
+    '''expresiones : expresion PCOMA
+                   | expresion PCOMA expresiones'''
+    if len(p) == 2:
+        p[0] = p[1]
+        print(p[0])
+    else:
+        p[0] = [p[1]] + [p[2]]
+        print(p[0])
 def p_termino(p):
     '''termino : factor
                | termino TIMES factor'''
@@ -231,40 +239,48 @@ def p_matrix_elements(p):
     else:
         p[0] = (p[1])+ p[3]
 
+def p_proposicion(p):
+    ''' proposicion : si_senten'''
 def p_si_senten(p):
-    '''si_senten : SI restriccion ENTONCES expresion
-                 | SI restriccion ENTONCES expresion SI_NO expresion'''
+    
+    '''si_senten : SI exp_condicional ENTONCES expresion 
+                 | SI exp_condicional ENTONCES bloque SI_NO expresiones'''
     if len(p) == 4:
-        p[0] = ('Palabra reservada', p[0]), ('Condicion', p[1]), ('Palabra reservada', p[2]), p[3]
+        p[0] = ('Palabra reservada', p[1]), ('Condicion', p[2]), ('Palabra reservada', p[3]), p[4]
     else:
-        p[0] = ('Palabra reservada', p[0]), ('Condicion', p[2]), ('Palabra reservada', p[2]), p[3], ('Palabra reservada', p[4]), p[5]
+        p[0] = ('Palabra reservada', p[1]), ('Condicion', p[2]), ('Palabra reservada', p[3]), p[4],p[5], p[6]
 
 
-# def p_exp_condicional(p):
-#     '''exp_condicional : expresion LT expresion
-#                        | expresion LE expresion
-#                        | expresion GT expresion
-#                        | expresion GE expresion
-#                        | expresion EQUAL expresion'''
-#     p[0] = ('Operador de comparación', p[2])
+def p_exp_condicional(p):
+     '''exp_condicional : expresion LT expresion
+                        | expresion LE expresion
+                        | expresion GT expresion
+                        | expresion GE expresion
+                        | expresion EQUAL expresion'''
+     p[0] = ('expresion',p[1]),('Operador de comparación', p[2]),('expresion',p[3])
 
-# def p_bloque(p):
-#     '''bloque : LBRACE sentencias RBRACE'''
-#     p[0] = ('bloque', p[2])
+def p_bloque(p):
+     '''bloque : expresion '''
+     p[0] = ('bloque', p[1])
+     print(p[0])
 
+def p_sentencias(p):
+     '''sentencias : sentencia
+                   | sentencia sentencias'''
+     if len(p) == 1:
+        p[0] = p[1]
+     else:
+        p[0] = [p[1]] + [p[2]]
 
-# def p_sentencias(p):
-#     '''sentencias : sentencia
-#                   | sentencias sentencia'''
-#     if len(p) == 2:
-#         p[0] = [p[1]]
-#     else:
-#         p[0] = p[1] + [p[2]]
-
-# def p_sentencia(p):
-#     '''sentencia : RETORNAR expresion PCOMA
-#                  | IMPRIMIR expresion PCOMA'''
-#     p[0] = (('Sentencia', p[1]), (p[2]), p[3])
+def p_sentencia(p):
+     '''sentencia : expresiones PCOMA
+                  | RETORNAR expresiones PCOMA
+                  | IMPRIMIR expresiones PCOMA'''
+     if len(p)==2:
+         p[0] = (('Sentencia', p[1]), (p[2]))
+        
+     else:
+         p[0] = (('Sentencia', p[1]), (p[2]), p[3])
 
 def p_error(p):
     if p!=None:
