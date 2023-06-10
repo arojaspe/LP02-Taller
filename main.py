@@ -2,6 +2,7 @@ from ply import lex
 from ply import yacc
 from translate import execute_code
 from pulp import *
+from concatenar_cadenas import concatenar_cadenas
 
 # Lista de tokens
 tokens = [
@@ -351,13 +352,15 @@ def imprimir(text):
             contador+=1
 
 def main():
-    nombre_archivo = "archivo.txt"
+    concatenar_cadenas("problemaPL.txt")
+    nombre_archivo = "concatenado.txt"
     with open(nombre_archivo, 'r') as archivo:
         for linea in archivo:
             imprimir(linea)
     # translate("fo.txt")
     res = execute_code("fo.txt")
 
+    
 
 if __name__ == '__main__':
     main()
