@@ -358,7 +358,7 @@ def main():
         for linea in archivo:
             imprimir(linea)
     # translate("fo.txt")
-    res = execute_code("fo.txt")
+    res = execute_code("problemaPL.txt")
 
     
 

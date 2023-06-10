@@ -37,11 +37,11 @@ def execute_code(archivo):
             # Reemplazar palabras clave y caracteres especiales
             linea = linea.replace('para', 'for')
             linea = linea.replace('si_no', 'else')
-            linea = linea.replace('si', 'if')
+            linea = linea.replace('Si', 'if')
             linea = linea.replace('imprimir', 'print')
             linea = linea.replace('{', ':')
             linea = linea.replace(';', '')
-
+            linea = linea.replace('entonces', '')
             if linea.startswith("for"):
                 loop = linea.split(" ")
                 variable = loop[1].split("=")[0]
