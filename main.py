@@ -1,5 +1,7 @@
 from ply import lex
 from ply import yacc
+from translate import execute_code
+from pulp import *
 
 # Lista de tokens
 tokens = [
@@ -353,6 +355,9 @@ def main():
     with open(nombre_archivo, 'r') as archivo:
         for linea in archivo:
             imprimir(linea)
+    # translate("fo.txt")
+    res = execute_code("fo.txt")
+
 
 if __name__ == '__main__':
     main()
