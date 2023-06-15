@@ -95,6 +95,7 @@ def execute_code(archivo):
                 object_creation = variable_fo+"=Simplex()"
                 codigo_python += object_creation+"\n" + \
                     variable_fo+'.fo("'+definicion_fo+'")\n'
+                definicion_fo = ''
                 continue
     # Ejecutar el código Python resultante
     exec("from Simplex import Simplex\n"+codigo_python)

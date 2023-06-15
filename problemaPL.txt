@@ -1,3 +1,16 @@
+#Ejemplo 1
+fo max z = 2000*x1 + 1500*x2 {
+        r 0.25*x1 + 0.2*x2 <= 200;
+        r 1*x1 + 1*x2 <= 900;
+        }
+imprimir(z.problem)
+imprimir(z.status)
+imprimir(z.objective)
+imprimir(z.variable[1])
+imprimir(z.variable[2])
+
+
+#Ejemplo 2
 fo max xd = 10*x1 + 10*x2 + 15*x3 {
         sa
         r 5*x1 + 2*x2 + 1*x3 <= 10 ;
@@ -23,4 +36,4 @@ para i = 0 ; i <= n ; i = i + 1 {
         y=10*z; 
         z=x+y; 
         imprimir(x);
-        } 
+        }
