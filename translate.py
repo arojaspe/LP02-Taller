@@ -93,7 +93,7 @@ def execute_code(archivo):
                 inicio_fo = False
                 variable_fo = definicion_fo.split(" ")[2]
                 object_creation = variable_fo+"=Simplex()"
-                codigo_python += object_creation+"\n" + \
+                codigo_python += object_creation+"\n" + "\t" * indentacion +\
                     variable_fo+'.fo("'+definicion_fo+'")\n'
                 definicion_fo = ''
                 continue
