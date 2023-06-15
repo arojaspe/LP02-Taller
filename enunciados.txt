@@ -1,0 +1,23 @@
+La empresa McDonald’s vende hamburguesas de un cuarto de libra y hamburguesas con queso. La hamburguesa de un cuarto de libra obviamente utiliza ¼ de libra de carne y la hamburguesa con queso sólo utiliza 0,2 libras. El restaurante empieza cada día con 200 libras de carne. La utilidad neta es la siguiente: $2.000 por cada hamburguesa de cuarto de libra y $1.500 por cada hamburguesa con queso. El gerente estima además que no venderá más de 900 hamburguesas en total. Aplicando el método SIMPLEX, determine la máxima utilidad que obtiene McDonald's.
+
+Variables de decisión:
+x1 = número de hamburguesas de un cuarto de libra que se venden.
+x2 = número de hamburguesas con queso que se venden.
+Función objetivo: 
+MAX Z = 2000x1 + 1500x2
+Restricciones:
+La cantidad total de carne que se puede utilizar es de 200 libras
+ 0.25x1+ 0.2x2 ≤200
+El número total de hamburguesas vendidas no puede ser mayor a 900:
+ x1+ x2≤ 900
+El número de hamburguesas vendidas debe ser mayor o igual a cero
+x1, x2 ≥ 0
+
+
+
+El gerente de una empresa de fabricación de dulces se enfrenta a un desafío de asignación de recursos. La empresa cuenta con tres actividades clave: la producción de chocolates, gomitas y caramelos. El objetivo del gerente es maximizar las ganancias de la empresa mediante una asignación óptima de recursos.
+Los chocolates le representan una ganancia de $10, las gomitas representan $10, y los caramelos representan $15
+
+Debido a limitaciones físicas, la planta de producción tiene estas limitaciones 
+5*choc + 2*gomi + 1*caram <= 10
+2*choc + 3*gomi + 9*caram >= 5;

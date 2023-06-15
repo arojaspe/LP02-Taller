@@ -145,7 +145,9 @@ lexer = lex.lex()
 
 def p_contenido(p):
     ''' contenido : problema
-                  | proposicion'''
+                  | proposicion
+                  | matrix
+                  | array'''
     if len(p) == 2:
         p[0] = p[1]
 
