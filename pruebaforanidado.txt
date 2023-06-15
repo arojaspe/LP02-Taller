@@ -1,0 +1,45 @@
+x=[[2,3],[1,4]]
+
+
+#Ejemplo 1
+fo max z = 2000*x1 + 1500*x2 {
+        r 0.25*x1 + 0.2*x2 <= 200;
+        r 1*x1 + 1*x2 <= 900;
+        }
+imprimir(z.problem)
+imprimir(z.status)
+imprimir(z.objective)
+imprimir(z.variable[1])
+imprimir(z.variable[2])
+
+
+#Ejemplo 2
+fo max xd = 10*x1 + 10*x2 + 15*x3 {
+        r 5*x1 + 2*x2 + 1*x3 <= 10;
+        r 2*x1 + 3*x2 + 9*x3 >= 5;
+        }
+imprimir(xd.problem)
+imprimir(xd.status)
+imprimir(xd.objective)
+imprimir(xd.variable[1])
+imprimir(xd.variable[2])
+imprimir(xd.variable[3])
+x=1;
+Si x>10 entonces {
+        b=10; 
+        x=x-10;
+        imprimir(x);
+}
+n=5;
+y=1;
+z=2;
+para i = 0 ; i <= n ; i = i + 1 {
+        x=y; 
+        y=10*z; 
+        z=x+y; 
+        imprimir(x);
+
+        para i = 0 ; i <= n ; i = i + 1 {
+                imprimir("hamburguesa");
+        }
+        }
