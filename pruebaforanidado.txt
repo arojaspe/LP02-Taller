@@ -1,0 +1,16 @@
+x=1;
+n=5;
+y=1;
+z=2;
+para i = 0 ; i <= n ; i = i + 1 {
+        fo max z = i*x1 + 1500*x2 {
+                        r 0.25*x1 + 0.2*x2 <= 200;
+                        r 1*x1 + i*x2 <= 900;
+                        }
+        imprimir("Solucion ");
+        imprimir(z.problem);
+        imprimir(z.status);
+        imprimir(z.objective);
+        imprimir(z.variable[1]);
+        imprimir(z.variable[2]);
+        }

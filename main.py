@@ -2,65 +2,44 @@ from ply import lex
 from ply import yacc
 from translate import execute_code
 from pulp import *
+from concatenar_cadenas import concatenar_cadenas
 
 # Lista de tokens
 tokens = [
-    'MIN',      # Token para "min"
-    'MAX',      # Token para "max"
-    'FO',       # Token para función
-    'R',        # Token para restricción
-    'VAR',      # Token para nombres de variables
+    'MIN',       # Token para "min"
+    'MAX',       # Token para "max"
+    'FO',        # Token para función
+    'R',         # Token para restricción
+    'VAR',       # Token para nombres de variables
     'LBRACKET',  # Token para caracter de arreglo o matriz "["
     'RBRACKET',  # Token para caracter de arreglo o matriz "]"
-    'COMMA',    # Token para caracter de arreglo o matriz ","
-    'ARRAY',
-    'NUMBER',   # Token para números
-    'PLUS',     # Token para el operador "+"
-    'MINUS',    # Token para el operador "-"
-    'TIMES',    # Token para el operador "*"
-    'DIVIDE',   # Token para el operador "/"
+    'LBRACE',    # Token para caracter "{"
+    'RBRACE',    # Token para caracter "}"
+    'COMMA',     # Token para caracter de arreglo o matriz ","
+    'PCOMA',     # Token para caracter ";"
+    'SI',        # Token para palabra reservada "SI"
+    'SI_NO',     # Token para palabra reservada "SI_NO"
+    'ENTONCES',  # Token para palabra reservada "ENTONCES"
+    'RETORNAR',  # Token para palabra reservada "RETORNAR"
+    'IMPRIMIR',  # Token para palabra reservada "IMPRIMIR"
+    'PARA',  # Token para palabra reservada "PARA"
+    'LPAR',      # Token para caracter "("
+    'RPAR',      # Token para caracter ")"
+    'NUMBER',    # Token para números
+    'PLUS',      # Token para el operador "+"
+    'MINUS',     # Token para el operador "-"
+    'TIMES',     # Token para el operador "*"
+    'DIVIDE',    # Token para el operador "/"
     'EQUAL',     # Token para el operador "="
     'LT',        # Token para el operador "<"
     'LE',        # Token para el operador "<="
     'GT',        # Token para el operador ">"
     'GE',        # Token para el operador ">="
-    'IF',  # Token para la palabra reservada de Python "if"
-    'ELSE',  # Token para la palabra reservada de Python "else"
-    'FOR',  # Token para la palabra reservada de Python "for"
-    'WHILE',  # Token para la palabra reservada de Python "while"
-    'DO',  # Token para la palabra reservada de Python "do"
-    'SWITCH',  # Token para la palabra reservada de Python "switch"
-    'CASE',  # Token para la palabra reservada de Python "case"
-    'BREAK',  # Token para la palabra reservada de Python "break"
-    'CONTINUE',  # Token para la palabra reservada de Python "continue"
-    'RETURN',  # Token para la palabra reservada de Python "return"
-    'FUNCTION',  # Token para la palabra reservada de Python "function"
-    'CLASS',  # Token para la palabra reservada de Python "class"
-    'TRY',  # Token para la palabra reservada de Python "try"
-    'CATCH',  # Token para la palabra reservada de Python "catch"
-    'THROW',  # Token para la palabra reservada de Python "throw"
-    'FINALLY',  # Token para la palabra reservada de Python "finally"
-    'IMPORT',  # Token para la palabra reservada de Python "import"
-    'EXPORT',  # Token para la palabra reservada de Python "export"
-    'CONST',  # Token para la palabra reservada de Python "const"
-    'LET',  # Token para la palabra reservada de Python "let"
-    'STATIC',  # Token para la palabra reservada de Python "static"
-    'PUBLIC',  # Token para la palabra reservada de Python "public"
-    'PRIVATE',  # Token para la palabra reservada de Python "private"
-    'PROTECTED',  # Token para la palabra reservada de Python "protected"
-    'INTERFACE',  # Token para la palabra reservada de Python "interface"
-    'EXTENDS',  # Token para la palabra reservada de Python "extends"
-    'IMPLEMENTS',  # Token para la palabra reservada de Python "implements"
-    'NEW',  # Token para la palabra reservada de Python "new"
-    'THIS',  # Token para la palabra reservada de Python "this"
-    'SUPER',  # Token para la palabra reservada de Python "super"
-    'INSTANCEOF',  # Token para la palabra reservada de Python "instanceof"
-    'TRUE',  # Token para la palabra reservada de Python "true"
-    'FALSE',  # Token para la palabra reservada de Python "false"
-    'NULL'  # Token para la palabra reservada de Python "null"
+    'DOT',
 ]
 
 # Expresiones regulares para tokens simples
+
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
@@ -68,14 +47,26 @@ t_DIVIDE = r'\/'
 t_EQUAL = r'\='
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_LPAR = r'\('
+t_RPAR = r'\)'
 t_COMMA = r','
 t_LT = r'<'
 t_LE = r'<='
 t_GT = r'>'
 t_GE = r'>='
+t_PCOMA = r';'
+t_DOT = r'.'
 t_ignore = ' \t \n'
 
 # Expresiones regulares para tokens complejos
+
+
+def t_COMMENT(t):
+    r'(\#[^\r\n]*)'
+    t.lexer.lineno += t.value.count('\n')
+    print("Comentario:", t.value)
 
 
 def t_MIN(t):
@@ -98,6 +89,36 @@ def t_R(t):
     return t
 
 
+def t_SI(t):
+    r'Si'
+    return t
+
+
+def t_SI_NO(t):
+    r'SI_NO'
+    return t
+
+
+def t_ENTONCES(t):
+    r'entonces'
+    return t
+
+
+def t_RETORNAR(t):
+    r'retornar'
+    return t
+
+
+def t_IMPRIMIR(t):
+    r'imprimir'
+    return t
+
+
+def t_PARA(t):
+    r'para'
+    return t
+
+
 def t_VAR(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
     return t
@@ -109,13 +130,7 @@ def t_NUMBER(t):
     return t
 
 
-def t_COMMENT(t):
-    r'\#.*'
-    print("Comentario", t.value)
-
 # Manejo de errores
-
-
 def t_error(t):
     if t.value[0] != None:
         print("Error: Carácter ilegal '%s'" % t.value[0])
@@ -128,22 +143,35 @@ lexer = lex.lex()
 # Definición de la gramática
 
 
+def p_contenido(p):
+    ''' contenido : problema
+                  | proposicion
+                  | matrix
+                  | array'''
+    if len(p) == 2:
+        p[0] = p[1]
+
+
 def p_problema(p):
-    '''problema : funcionobjetivo
-                | restriccion
-                | expresion'''
-    p[0] = p[1]
+    '''problema : funcionobjetivo LBRACE restricciones RBRACE'''
+    if len(p) == 2:
+        p[0] = p[1]
+    elif len(p) == 4:
+        p[0] = p[2]
+    else:
+        p[0] = (p[1], p[3])
+        print(p[0])
 
 
 def p_funcionobjetivo(p):
-    '''funcionobjetivo : FO MIN expresion
-                       | FO MAX expresion'''
+    '''funcionobjetivo : FO MIN  expresion 
+                       | FO MAX  expresion '''
     p[0] = ('funcionobjetivo', ('Palabra reservada', p[2]), p[3])
 
 
 def p_restriccion(p):
     '''restriccion : R expresion
-                   | R expresion LT expresion   
+                   | R expresion LT expresion
                    | R expresion LE expresion
                    | R expresion GT expresion
                    | R expresion GE expresion
@@ -151,7 +179,19 @@ def p_restriccion(p):
     if len(p) == 2:
         p[0] = ('restricción', p[2])
     else:
-        p[0] = ('restricción', p[2], ('operador de comparación', p[3]), p[4])
+        p[0] = ('restricción', p[2], ('operador de comparación', p[3]), (p[4]))
+
+
+def p_restricciones(p):
+    '''restricciones : restriccion PCOMA
+                     | restriccion PCOMA restricciones'''
+
+    print('Restricciones:', p[1])
+
+    if len(p) == 4:
+        p[0] = [p[1]] + p[3]
+    else:
+        p[0] = [p[1]]
 
 
 def p_expresion(p):
@@ -166,13 +206,32 @@ def p_expresion(p):
         p[0] = p[1], ('operador', p[2]), p[3]
 
 
+def p_expresiones(p):
+    '''expresiones : expresion PCOMA
+                   | expresion PCOMA expresiones'''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = [p[1]] + [p[2]]
+
+
 def p_termino(p):
     '''termino : factor
                | termino TIMES factor'''
     if len(p) == 2:
-        p[0] = (p[1])
+        p[0] = p[1]
     else:
-        p[0] = (p[1], ('operador', p[2]), p[3])
+        if p[2] == '*':
+
+            if (p[1][0] == 'variable' and p[1][1] != 'i') and (p[3][0] == 'variable' and p[3][1] != 'i'):
+                print(
+                    "Esto no es un modelo lineal [multiplicar variable * variable]")
+                exit()
+
+            else:
+                p[0] = (p[1], ('operador', p[2]), p[3])
+        else:
+            p[0] = (p[1], ('operador', p[2]), p[3])
 
 
 def p_factor(p):
@@ -226,9 +285,81 @@ def p_matrix_elements(p):
         p[0] = (p[1]) + p[3]
 
 
+def p_proposicion(p):
+    ''' proposicion : si_senten
+                    | para'''
+
+
+def p_si_senten(p):
+    '''si_senten : SI bloque_condicional  
+                 | SI bloque_condicional  SI_NO expresiones'''
+    if len(p) == 3:
+        p[0] = ('Palabra reservada', p[1]), ('bloque condicional', p[2])
+        print('Analisis IF', p[0])
+    else:
+        p[0] = ('Palabra reservada', p[1]), ('Condicion',
+                                             p[2]), ('Palabra reservada', p[3])
+
+
+def p_bloque_condicional(p):
+    '''bloque_condicional : exp_condicional ENTONCES bloque'''
+    p[0] = (p[1], p[2], p[3])
+
+
+def p_exp_condicional(p):
+    '''exp_condicional : expresion LT expresion
+                       | expresion LE expresion
+                       | expresion GT expresion
+                       | expresion GE expresion
+                       | expresion EQUAL expresion'''
+    p[0] = ('expresion', p[1]), ('Operador de comparación',
+                                 p[2]), ('expresion', p[3])
+
+
+def p_bloque(p):
+    '''bloque : LBRACE sentencias RBRACE'''
+    p[0] = (p[2])
+    print('Soy el Bloque', p[0])
+
+
+def p_sentencias(p):
+    '''sentencias : sentencia 
+                  | sentencia sentencias'''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = [p[1]] + [p[2]]
+
+
+def p_sentencia(p):
+    '''sentencia : expresion PCOMA
+                 | RETORNAR expresion PCOMA
+                 | IMPRIMIR LPAR sentencias RPAR PCOMA 
+                 | IMPRIMIR LPAR VAR DOT expresion RPAR PCOMA'''
+    if len(p) == 3:
+        p[0] = (('Sentencia', p[1]), (p[2]))
+
+    else:
+        p[0] = (('Sentencia', p[1]), (p[2]), p[3])
+
+
+def p_asignacion(p):
+    '''asignacion : VAR EQUAL expresion
+                  | VAR EQUAL array
+                  | VAR EQUAL matrix'''
+    p[0] = (p[1], p[3])
+
+
+def p_para(p):
+    '''para : PARA asignacion PCOMA exp_condicional PCOMA  expresion PCOMA  bloque'''
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
+    print('Soy el para', p[0])
+
+
 def p_error(p):
     if p != None:
-        print("Error de sintaxis en '%s'" % p)
+        # print("Error de sintaxis en '%s'" % p)
+        pass
 
 
 # Construcción del parser
@@ -257,12 +388,13 @@ def imprimir(text):
 
 
 def main():
-    nombre_archivo = "archivo.txt"
+    concatenar_cadenas("problemaPL.txt")
+    nombre_archivo = "concatenado.txt"
     with open(nombre_archivo, 'r') as archivo:
         for linea in archivo:
             imprimir(linea)
     # translate("fo.txt")
-    res = execute_code("fo.txt")
+    res = execute_code("problemaPL.txt")
 
 
 if __name__ == '__main__':

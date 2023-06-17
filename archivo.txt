@@ -1,20 +1,3 @@
-fo max j*z*y{       
-        i*x + i*y + z <= 10;
-        x + y + z <= 15;
-        x + j*y >= 5;
-        x + y >= 8;
-}
-#nuestros bucles
-para i=0; i<n; i=i+1 {
-        x = y;
-        y = 10*z;
-        z = x + y;
-imprimir(20*x)
-}
-#nuestros condicionales
-si y < 1 {
-        b = 0;
-}
-si_no {
-        res = y-1;
-}
+fo max 10*j+10*z+15*y{  r i*x + i*y + z <= 10 ;}
+Si x>10 entonces {b=10; x=x-10; imprimir(x;b;);}
+para i=0; i<n  ; i=i+1 ;{x=y; y=10*z; z=x+y; imprimir(x;);}

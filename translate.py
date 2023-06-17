@@ -37,32 +37,18 @@ def execute_code(archivo):
             # Reemplazar palabras clave y caracteres especiales
             linea = linea.replace('para', 'for')
             linea = linea.replace('si_no', 'else')
-            linea = linea.replace('si', 'if')
+            linea = linea.replace('Si', 'if')
             linea = linea.replace('imprimir', 'print')
             linea = linea.replace('{', ':')
-            linea = linea.replace(';', '')
-
+            linea = linea.replace('entonces', '')
             if linea.startswith("for"):
-                loop = linea.split(" ")
-                variable = loop[1].split("=")[0]
-                inicio = loop[1].split("=")[1]
-                signo = ""
-                final = 0
-                signo_paso = ""
-                for i in range(len(loop[3])):
-                    try:
-                        final = int(loop[3][i:])
-                        break
-                    except:
-                        if loop[3][i] == "<" or loop[3][i] == ">" or loop[3][i] == "=":
-                            signo += loop[3][i]
-                for i in range(len(loop[5])):
-                    try:
-                        paso = abs(int(loop[5][i:]))
-                        break
-                    except:
-                        pass
-                if int(inicio) < final and signo_paso == "+" and (signo == '<=' or signo == '<'):
+                loop = linea.split(";")
+                variable = loop[0].split("=")[0].split()[1]
+                inicio = loop[0].split("=")[1]
+                signo = loop[1].split()[1]
+                final = loop[1].split()[2]
+                paso = loop[2].split()[4]
+                if signo == '<=' or signo == '<':
                     linea = ("for "+variable+" in range("+str(inicio) +
                              ","+str(final)+","+str(paso)+"):")
                 else:
@@ -77,6 +63,7 @@ def execute_code(archivo):
             codigo_python += "\t" * indentacion
 
             # Agregar la línea procesada al código Python
+            linea = linea.replace(';', '')
             codigo_python += linea
 
             # Agregar una nueva línea después de cada línea de código
@@ -104,10 +91,14 @@ def execute_code(archivo):
 
             if "}" in linea:
                 inicio_fo = False
-                codigo_python += 'fo("'+definicion_fo+'")\n'
+                variable_fo = definicion_fo.split(" ")[2]
+                object_creation = variable_fo+"=Simplex()"
+                codigo_python += object_creation+"\n" + "\t" * indentacion +\
+                    variable_fo+'.fo("'+definicion_fo+'")\n'
+                definicion_fo = ''
                 continue
     # Ejecutar el código Python resultante
-    exec("from simplex import fo\n"+codigo_python)
+    exec("from Simplex import Simplex\n"+codigo_python)
 
 
 # Ejemplo de uso
